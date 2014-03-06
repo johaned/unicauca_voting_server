@@ -9,6 +9,17 @@ class SessionManager
 
   validates :token, :uniqueness => true
 
+  # Queries the current user using token and user_agent fields
+  #
+  # @param token [String]
+  # @param user_agent [String]
+  #
+  # @return [User], if token and user_agent params don't match ocurrencies
+  # this method returns a nil object
+  def self.current_user(token, user_agent)
+    self.where(token: token, :devices_authorized.in => [user_agent]).try(:first).try(:user)
+  end
+
   # defines a flow to authenticate and associate a SessionManager instance with
   # the current user account. Also, it pushes a device only if it is not already
   # referenced
