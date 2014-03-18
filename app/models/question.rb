@@ -3,8 +3,8 @@ class Question
   include Mongoid::Timestamps
 
   field :caption,               type: String
-  field :affirmative_responses, type: Integer
-  field :negative_responses,    type: Integer
+  field :affirmative_responses, type: Integer, default: 0
+  field :negative_responses,    type: Integer, default: 0
 
   # Returns a current question according to current_question_method setting
   # contained into config/voting_service.yml
@@ -12,7 +12,7 @@ class Question
   # @return [Question], by default it returns the lastest question
   def self.current_question
     voting_service_conf = YAML.load_file(Rails.root.join('config', 'voting_service.yml'))
-    current_question_method = voting_service_conf['setings']['current_question_method']
+    current_question_method = voting_service_conf['settings']['current_question_method']
     current_question_method = current_question_method || 'last'
     case current_question_method
       when 'first'
@@ -26,4 +26,20 @@ class Question
         Question.last
     end
   end
+
+  # This method increases either affirmative or negative response
+  # according to user decision
+  #
+  # @param vote [String]
+  #
+  # @return [Integer], current number of votes in associated field
+  def vote(vote)
+    case vote
+      when 'affirmative'
+        self.inc :affirmative_responses, 1
+      when 'negative'
+        self.inc :negative_responses, 1
+    end
+  end
+
 end
