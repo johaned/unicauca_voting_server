@@ -42,4 +42,16 @@ class Question
     end
   end
 
+  # Returns a hash with lazy information regarding to voting results
+  #
+  # @return [Hash]
+  def results
+    results = {}
+    results[:total_reponses] = affirmative_responses + negative_responses
+    results[:affirmative_responses_percentage] = (affirmative_responses / (results[:total_reponses]*1.0) )
+    results[:negative_responses_percentage] = (negative_responses / (results[:total_reponses]*1.0) )
+    results[:affirmative_responses_percentage_caption] = "#{results[:affirmative_responses_percentage].round(2)* 100.0}%"
+    results[:negative_responses_percentage_caption] = "#{results[:negative_responses_percentage].round(2)* 100.0}%"
+    results
+  end
 end
